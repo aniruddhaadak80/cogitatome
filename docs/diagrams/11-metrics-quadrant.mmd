@@ -1,0 +1,23 @@
+quadrantChart
+    title Interpretability techniques — effort vs payoff
+    x-axis Low effort --> High effort
+    y-axis Low payoff --> High payoff
+    quadrant-1 Do these first
+    quadrant-2 Big bets
+    quadrant-3 Cheap sanity checks
+    quadrant-4 Expensive, rarely worth it
+    Attention pattern inspection: [0.18, 0.52]
+    Head profile metrics (prevTokenScore, entropy, focus): [0.24, 0.66]
+    Ablation sweep by head: [0.38, 0.82]
+    Logit lens: [0.22, 0.48]
+    Residual stream norm tracking: [0.16, 0.42]
+    K-composition scoring: [0.46, 0.78]
+    Edge attribution (qk / ov): [0.52, 0.84]
+    Circuit discovery on a ground-truth model: [0.58, 0.88]
+    Activation patching sweep: [0.62, 0.9]
+    Linear probe fitting per layer: [0.42, 0.72]
+    Neuron-by-neuron manual audit: [0.72, 0.3]
+    Full SAE training at production scale: [0.88, 0.58]
+    Automated circuit search (no ground truth): [0.82, 0.44]
+    Feature visualization at scale: [0.66, 0.36]
+    Interpretability for a training run: [0.9, 0.86]

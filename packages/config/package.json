@@ -1,0 +1,21 @@
+{
+  "name": "@repo/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared TypeScript, lint and Tailwind presets for every cogitatome workspace.",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.next.json": "./tsconfig.next.json",
+    "./tsconfig.node.json": "./tsconfig.node.json",
+    "./tailwind-preset.js": "./tailwind-preset.js",
+    "./vitest.base.ts": "./vitest.base.ts"
+  },
+  "files": [
+    "tsconfig.base.json",
+    "tsconfig.next.json",
+    "tsconfig.node.json",
+    "tailwind-preset.js",
+    "vitest.base.ts"
+  ]
+}

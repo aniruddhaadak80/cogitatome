@@ -1,0 +1,23 @@
+{
+  "seed": 60602,
+  "generatedBy": "scripts/seed.ts",
+  "datasets": {
+    "corpus.papers.json": {
+      "role": "harvested arXiv corpus",
+      "bytes": 1177804
+    },
+    "corpus.media.ts": {
+      "role": "hand-curated talks, posts and threads"
+    },
+    "activations.jsonl": {
+      "role": "SAE training data (sparse dictionary mixtures)",
+      "rows": 8000,
+      "dim": 64
+    },
+    "dictionary.json": {
+      "role": "ground-truth atoms behind the activations",
+      "atoms": 160
+    }
+  },
+  "reproducibility": "bun scripts/seed.ts --verify regenerates byte-identical output"
+}

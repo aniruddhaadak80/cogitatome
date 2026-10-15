@@ -1,0 +1,178 @@
+erDiagram
+  CorpusEntry ||--o{ CorpusFacet : "aggregates into"
+  CorpusSearchResult ||--|{ CorpusEntry : "contains"
+  CorpusSearchResult ||--|{ CorpusFacet : "carries"
+  ForwardTrace ||--|{ LayerRecord : "layers"
+  ForwardTrace ||--o| ModelConfig : "config"
+  ForwardTrace ||--o{ HeadProfile : "analysis produces"
+  LayerRecord ||--|{ HeadProfile : "attention rows"
+  HeadProfile ||--o{ CircuitGraph : "feeds"
+  SaeReport ||--|{ SaeFeature : "features"
+  LayerRecord ||--o{ SaeFeature : "activations train"
+  ForwardTrace ||--o{ PatchReport : "patching"
+  ForwardTrace ||--o{ AttributionReport : "attribution"
+  ForwardTrace ||--o{ ProbeResult : "probing"
+  CircuitGraph ||--|{ CircuitNode : "nodes"
+  CircuitGraph ||--|{ CircuitEdge : "edges"
+  ScenarioRun ||--|{ ReasoningStep : "trace"
+  ScenarioRun ||--|{ ScenarioVariable : "variables"
+  EthicalAnalysis ||--|{ EthicalPosition : "positions"
+  EthicalAnalysis ||--|{ ArgumentNode : "argumentGraph nodes"
+  ArgumentNode ||--|{ ArgumentEdge : "argumentGraph edges"
+  TimelineSnapshot ||--o{ ForwardTrace : "wraps state"
+
+  CorpusEntry {
+    string id PK
+    string kind "paper|talk|post|book|tool|dataset|thread"
+    string title
+    string authors
+    number year
+    string venue
+    string url
+    string oneLiner
+    string tags
+    string source
+    string abstract
+    string arxivId
+    string pdf
+  }
+  CorpusFacet {
+    string tag PK
+    number count
+    string label
+  }
+  CorpusSearchResult {
+    CorpusEntry entries
+    number total
+    string query
+    CorpusFacet facets
+  }
+  ModelConfig {
+    number vocabSize
+    number dModel
+    number nLayers
+    number nHeads
+    number dMlp
+    number maxLen
+    number seed
+  }
+  ForwardTrace {
+    number tokens
+    ModelConfig config
+    Float64Array ids
+    LayerRecord layers
+    Float64Array logits
+    Float64Array finalResidual
+  }
+  LayerRecord {
+    number index PK
+    Float64Array residual
+    Float64Array attnOut
+    Float64Array mlpOut
+    Float64Array attention
+    Float64Array headOut
+    Float64Array mlpPre
+  }
+  HeadProfile {
+    number layer PK
+    number head PK
+    number prevTokenScore
+    number focus
+    number entropy
+    number firstTokenScore
+    string role "previous-token|induction|copying|positional|diffuse|attention-sink"
+    object topKeys
+  }
+  AttributionReport {
+    number targetToken
+    number position
+    number total
+    AttributionComponent components
+  }
+  ProbeResult {
+    number layer
+    number accuracy
+    number auc
+    number weights
+    number bias
+    number direction
+  }
+  PatchReport {
+    number layer
+    PatchStep steps
+    number targetLogitDelta
+    number causalStrength
+  }
+  CircuitGraph {
+    CircuitNode nodes
+    CircuitEdge edges
+    number targetToken
+    number targetLogit
+  }
+  SaeReport {
+    SaeFeature features
+    number l0
+    number explainedVariance
+    number finalLoss
+    number lossCurve
+  }
+  SaeFeature {
+    number index PK
+    number decoder
+    number maxActivation
+    number meanActivation
+    number firingRate
+    boolean dead
+    string activatingTokens
+  }
+  ScenarioRun {
+    string scenarioId PK
+    string outcome "aligned|gamed|unsafe|indeterminate"
+    ReasoningStep trace
+    ScenarioVariable variables
+    number confidence
+    string mitigations
+  }
+  ReasoningStep {
+    number step PK
+    string actor
+    string thought
+    string evidence
+    string action
+  }
+  ScenarioVariable {
+    string name PK
+    number value
+    string unit
+    string note
+  }
+  EthicalAnalysis {
+    string caseId PK
+    EthicalPosition positions
+    string aggregate "permissible|forbidden|obligatory"
+    object argumentGraph
+  }
+  EthicalPosition {
+    string id PK
+    string name
+    string verdict "permissible|forbidden|obligatory"
+    number weight
+    string argument
+  }
+  ArgumentNode {
+    string id PK
+    string claim
+    number strength
+  }
+  ArgumentEdge {
+    string from PK
+    string to PK
+    string kind "supports|rebuts"
+    number weight
+  }
+  TimelineSnapshot {
+    number index PK
+    string label
+    object state
+    string checksum
+  }

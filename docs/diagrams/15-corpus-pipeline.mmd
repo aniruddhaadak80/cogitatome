@@ -1,0 +1,40 @@
+flowchart LR
+  subgraph harvest["Harvest — scripts/harvest-arxiv.ts"]
+    arxiv["arXiv API<br/>export.arxiv.org/api/query"]
+    fetch["fetch by category: cs.LG cs.AI cs.CL cs.CR stat.ML"]
+    raw["raw Atom XML"]
+    page["paginate 100 at a time<br/>until start > totalResults"]
+  end
+
+  subgraph normalise["Normalise — packages/seed"]
+    parse["parse: id, title, authors, year,<br/>published, categories, abstract"]
+    dedupe["dedupe on arxivId<br/>(573 unique papers survive)"]
+    tag["map categories → tags<br/>interpretability · alignment · sae · circuits"]
+    oneline["oneLiner = first sentence of the abstract"]
+    media["merge corpus.media.ts<br/>talks · posts · tweets · hubs"]
+    write["write corpus.papers.json<br/>+ services/agents/corpus.json"]
+  end
+
+  subgraph index["Index — services/agents + packages/core"]
+    build["build BM25 postings<br/>over title + oneLiner + tags + venue"]
+    facets["count facets by tag"]
+    store["file-backed store<br/>packages/seed/data/**"]
+  end
+
+  subgraph search["Search — /api/v1/corpus"]
+    q["GET /api/v1/corpus?q=induction+heads"]
+    score["score + rank"]
+    out["CorpusSearchResult<br/>entries · total · query · facets"]
+  end
+
+  subgraph verify["Verify — scripts/verify-links.ts"]
+    urls["extract every url + pdf field"]
+    head["HEAD then GET, concurrency 8, 15s timeout"]
+    report["summary; exit non-zero on any failure"]
+  end
+
+  arxiv --> fetch --> raw --> page --> parse --> dedupe --> tag --> oneline --> media --> write
+  write --> build --> facets --> store
+  store --> q --> score --> out
+  write --> urls --> head --> report
+  report -. "weekly / link-check.yml" .-> arxiv

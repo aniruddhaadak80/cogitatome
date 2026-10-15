@@ -1,0 +1,26 @@
+{
+  "name": "@repo/seed",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline seed datasets and deterministic generators: corpus, worlds, models, scenarios.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./data/*": "./data/*",
+    "./data/corpus.papers.json": "./data/corpus.papers.json",
+    "./data/corpus.media": "./data/corpus.media.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --root .",
+    "lint": "eslint src",
+    "seed": "bun ../../scripts/seed.ts",
+    "harvest:arxiv": "bun ../../scripts/harvest-arxiv.ts"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0"
+  }
+}

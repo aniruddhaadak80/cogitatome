@@ -1,0 +1,162 @@
+classDiagram
+  class Rng {
+    -number state
+    +next() number
+    +symmetric(scale) number
+    +below(n) number
+  }
+
+  class ModelConfig {
+    <<interface>>
+    +number vocabSize
+    +number dModel
+    +number nLayers
+    +number nHeads
+    +number dMlp
+    +number maxLen
+    +number seed
+  }
+
+  class ModelWeights {
+    <<interface>>
+    +ModelConfig config
+    +Matrix embedding
+    +Matrix position
+    +LayerWeights[] layers
+    +Vector lnFGamma
+    +Vector lnFBeta
+    +Matrix unembed
+    +Vector unembedBias
+    +boolean useLayerNorm
+    +boolean useMlp
+    +string label
+    +string[] notes
+  }
+
+  class LayerWeights {
+    <<interface>>
+    +Vector ln1Gamma
+    +Vector ln1Beta
+    +Matrix wq
+    +Matrix wk
+    +Matrix wv
+    +Matrix wo
+    +Vector w1
+    +Vector b1
+    +Matrix w2
+    +Vector b2
+    +number[] headBiasCurvature
+    +number[] headBiasRecency
+    +number[] headGain
+  }
+
+  class CogitatomeModel {
+    +ModelWeights weights
+    +ModelConfig config
+    +inputResidual(tokens) Vector[]
+    +forward(tokens) ForwardTrace
+    +predict(tokens) number[]
+    +confidences(tokens) number[]
+    +ablateHead(tokens, layer, head) ForwardTrace
+  }
+
+  class randomWeights {
+    <<function>>
+    +randomWeights(config) ModelWeights
+  }
+
+  class constructInductionModel {
+    <<function>>
+    +constructInductionModel(config) ModelWeights
+    +prevTokenBias(distance, curvature, recency) number
+  }
+
+  class profileHeads {
+    <<function>>
+    +profileHeads(trace) HeadProfile[]
+  }
+
+  class attribute {
+    <<function>>
+    +attribute(trace, token, position) AttributionReport
+  }
+
+  class trainSae {
+    <<function>>
+    +trainSae(activations, config) SaeReport
+  }
+
+  class patchSweep {
+    <<function>>
+    +patchSweep(tokens, layer, target) PatchReport
+  }
+
+  class discoverCircuit {
+    <<function>>
+    +discoverCircuit(trace, target) CircuitGraph
+  }
+
+  class fitProbe {
+    <<function>>
+    +fitProbe(records, layer) ProbeResult
+  }
+
+  class ForwardTrace {
+    <<interface>>
+    +number[] tokens
+    +ModelConfig config
+    +Float64Array[] ids
+    +LayerRecord[] layers
+    +Float64Array[] logits
+    +Float64Array[] finalResidual
+  }
+
+  class LayerRecord {
+    <<interface>>
+    +number index
+    +Float64Array[] residual
+    +Float64Array[] attnOut
+    +Float64Array[] mlpOut
+    +Float64Array[][] attention
+    +Float64Array[] headOut
+    +Float64Array[] mlpPre
+  }
+
+  class HeadProfile {
+    <<interface>>
+    +number layer
+    +number head
+    +number prevTokenScore
+    +number focus
+    +number entropy
+    +number firstTokenScore
+    +HeadRole role
+  }
+
+  class TimelineSnapshot~TShape~ {
+    <<interface>>
+    +number index
+    +string label
+    +TShape state
+    +string checksum
+  }
+
+  Rng <.. randomWeights : seeds
+  Rng <.. constructInductionModel : seeds
+  randomWeights ..> ModelWeights : returns
+  constructInductionModel ..> ModelWeights : returns
+  ModelWeights *-- LayerWeights
+  ModelWeights *-- ModelConfig
+  CogitatomeModel o-- ModelWeights
+  CogitatomeModel ..> ForwardTrace : produces
+  CogitatomeModel ..> LayerRecord : records
+  ForwardTrace *-- LayerRecord
+  profileHeads ..> HeadProfile : produces
+  HeadProfile ..|> LayerRecord : reads
+  attribute ..> ForwardTrace : reads
+  trainSae ..> LayerRecord : reads mlpPre
+  patchSweep ..> CogitatomeModel : calls ablateHead
+  discoverCircuit ..> HeadProfile : reads
+  discoverCircuit ..> ForwardTrace : reads
+  fitProbe ..> LayerRecord : reads residual
+  TimelineSnapshot ..> ForwardTrace : snapshots

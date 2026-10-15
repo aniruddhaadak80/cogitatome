@@ -1,0 +1,14 @@
+# Render blueprint. Deploy: connect the repo, Render picks this up automatically.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: cogitatome
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: singapore
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://cogitatome.onrender.com

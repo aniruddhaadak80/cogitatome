@@ -1,0 +1,19 @@
+{
+  "name": "@repo/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure, deterministic interpretability engine: transformer simulation, circuit discovery, alignment scenarios, corpus index.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --root .",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "zod": "^3.25.76",
+    "date-fns": "^4.1.0"
+  }
+}

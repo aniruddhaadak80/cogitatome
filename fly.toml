@@ -1,0 +1,26 @@
+# Fly.io Machines config. Primary region bom (Mumbai — closest to Kolkata).
+# Deploy: `fly launch --no-deploy && fly deploy` (see docs/guides/deploying.md).
+app = "cogitatome"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "20s"
+    interval = "30s"
+    method = "GET"
+    path = "/healthz"
+    protocol = "http"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"

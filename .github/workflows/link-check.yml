@@ -1,0 +1,21 @@
+name: link-check
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install --frozen-lockfile
+      # Offline parse check always runs; the full network sweep runs too, and
+      # failing links open an issue rather than failing silently.
+      - run: bun scripts/verify-links.ts --offline
+      - run: bun scripts/verify-links.ts

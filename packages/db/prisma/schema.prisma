@@ -1,0 +1,68 @@
+// cogitatome persistence — optional by design.
+//
+// Every route works from the deterministic in-memory store when no database is
+// configured, so a fresh clone runs with zero setup. This schema exists for
+// saving dissections, sandbox runs and corpus notes across visits.
+//
+// `DATABASE_URL` is optional: `packages/db/src/index.ts` detects its absence and
+// falls back to the file-backed store in `@repo/core`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Dissection {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  prompt      String
+  modelId     String
+  trace       Json
+  notes       String?
+  shared      Boolean  @default(false)
+  headNotes   HeadNote[]
+  @@index([modelId])
+  @@index([shared])
+}
+
+model HeadNote {
+  id           String     @id @default(cuid())
+  dissection   Dissection @relation(fields: [dissectionId], references: [id], onDelete: Cascade)
+  dissectionId String
+  layer        Int
+  head         Int
+  label        String
+  body         String
+  @@unique([dissectionId, layer, head])
+  @@index([dissectionId])
+}
+
+model SandboxRun {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  scenario  String
+  seed      Int
+  outcome   String
+  run       Json
+  @@index([scenario])
+}
+
+model CorpusBookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  entryId   String   @unique
+  note     String?
+}
+
+model EthicsCase {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  caseId    String
+  analysis  Json
+}

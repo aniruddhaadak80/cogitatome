@@ -1,0 +1,15 @@
+# Pinned dependency mirror for the Docker build and reproducible installs.
+# These exact versions were resolved and verified against the local toolchain
+# (Python 3.12) in the editable venv; the multi-stage Dockerfile installs them.
+# Runtime dependencies:
+fastapi==0.143.0
+starlette==0.52.1
+uvicorn[standard]==0.54.0
+pydantic==2.14.0
+numpy==2.5.4
+httpx==0.28.1
+
+# --- dev / test only (installed via the [dev] extra, NOT in the runtime image) ---
+# pytest==8.4.2
+# pytest-cov==7.1.0
+# ruff==0.17.0

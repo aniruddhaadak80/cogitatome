@@ -1,0 +1,46 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+flowchart LR
+  subgraph browser["Browser — apps/web"]
+    direction TB
+    rsc["apps/web/src/app — React 19 server components"]
+    viz["@repo/ui — activation visualisations"]
+    store["zustand session store"]
+    client["@repo/sdk — typed OpenAPI client"]
+  end
+
+  subgraph nextjs["Next.js 15 server — apps/web route handlers"]
+    direction TB
+    api["/api/v1/interpret · /metrics · /corpus · /scenarios · /ethics · /debate"]
+    sse["/api/v1/stream — SSE proxy + ring buffer"]
+    static["/landing · /dissect · /circuits · /sae · /sandbox · /corpus"]
+  end
+
+  core(["packages/core — deterministic engine"])
+  ui(["packages/ui — design system"])
+  seed(["packages/seed — corpus + generators"])
+  sdk(["packages/sdk — typed client"])
+  rust(["crates/engine — Rust compute crate"])
+  agents(["services/agents — FastAPI interpretability"])
+  relay(["services/relay — Go telemetry relay"])
+
+  rsc --> api
+  viz --> rsc
+  store --> rsc
+  client --> rsc
+  api --> core
+  api --> seed
+  api --> agents
+  sse --> relay
+  relay --> sse
+  core --> rust
+  agents --> core
+  seed --> core
+  ui --> viz
+  agents -->|"OpenAPI"| sdk
+  sdk --> client
+
+  rsc -. "REST /v1/*" .-> api
+  rsc -. "SSE /v1/stream" .-> sse
+  viz -. "wasm" .-> rust
+  relay -. "SSE /v1/stream" .-> browser
+  api -. "HTTP localhost:8000" .-> agents

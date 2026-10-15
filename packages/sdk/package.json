@@ -1,0 +1,24 @@
+{
+  "name": "@repo/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Typed client generated from the cogitatome OpenAPI contract.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./routes": "./generated/routes.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --root .",
+    "lint": "eslint src",
+    "generate": "bun ../../scripts/generate-sdk.ts",
+    "generate:check": "bun ../../scripts/generate-sdk.ts --check"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

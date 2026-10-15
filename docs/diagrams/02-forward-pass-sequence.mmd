@@ -1,0 +1,41 @@
+sequenceDiagram
+  autonumber
+  actor Dev as Researcher (browser)
+  participant Page as apps/web /dissect (RSC)
+  participant Route as /api/v1/interpret route handler
+  participant Model as CogitatomeModel (packages/core)
+  participant Head as attention heads
+  participant Mlp as MLP block
+  participant Unembed as unembedding
+  participant Trace as ForwardTrace
+
+  Dev->>Page: open /dissect, choose model + tokens
+  Page->>Route: POST /api/v1/interpret {model, tokens, head?}
+  Route->>Model: new CogitatomeModel(randomWeights(config))
+  Note over Model: config = DEFAULT_CONFIG<br/>vocab 256 · dModel 32 · 4 layers · 4 heads
+  Route->>Model: inputResidual(tokens)
+  Model-->>Route: ids[seq][dModel]
+  Route->>Model: forward(tokens)
+
+  loop for each layer 0..nLayers-1
+    Model->>Head: q = x·Wq, k = x·Wk, v = x·Wv per head
+    Head-->>Model: attention[head][q][k] (causal, softmaxed)
+    Model->>Head: wo(headOut) with headGain
+    Head-->>Model: attnOut[seq][dModel] → residual += attnOut
+    Model->>Mlp: gelu(layerNorm(residual)·W1 + b1)·W2 + b2
+    Mlp-->>Model: mlpPre, mlpOut → residual += mlpOut
+    Model->>Trace: push LayerRecord {residual, attnOut, mlpOut, attention, headOut, mlpPre}
+  end
+
+  Model->>Unembed: layerNorm(finalResidual) · unembed + bias
+  Unembed-->>Model: logits[seq][vocab]
+  Model-->>Trace: {tokens, config, ids, layers, logits, finalResidual}
+  Route-->>Page: ForwardTrace + HeadProfile[] + AttributionReport
+  Page-->>Dev: residual stream, attention matrix, head cards
+
+  opt ablation sweep
+    Route->>Model: ablateHead(tokens, layer, head)
+    Note over Model: headGain[head] := 0, model re-runs
+    Model-->>Route: ForwardTrace (ablated)
+    Route-->>Page: Δlogit on the target token
+  end

@@ -1,0 +1,36 @@
+gitGraph
+   commit id: "chore: monorepo scaffold"
+   commit id: "docs: 16 mermaid diagrams + ADRs"
+   branch develop
+   checkout develop
+   commit id: "feat(core): induction model + forward trace"
+   commit id: "feat(web): dissection view"
+   branch feature/sae-training
+   checkout feature/sae-training
+   commit id: "feat(sae): resampling branch + l0 metric"
+   commit id: "test(sae): dead feature recovery"
+   checkout develop
+   merge feature/sae-training tag: "sae-v1"
+   commit id: "feat(web): feature atlas"
+   branch feature/sandbox-scenarios
+   checkout feature/sandbox-scenarios
+   commit id: "feat(sandbox): sleeper agents scenario"
+   checkout develop
+   merge feature/sandbox-scenarios
+   checkout main
+   merge develop tag: "v0.1.0"
+   branch release/0.2
+   checkout release/0.2
+   commit id: "chore(release): bump 0.2.0"
+   commit id: "docs: changelog for 0.2.0"
+   checkout main
+   merge release/0.2 tag: "v0.2.0"
+   checkout develop
+   merge main
+   branch fix/relay-backpressure
+   checkout fix/relay-backpressure
+   commit id: "fix(relay): drop policy under sustained load"
+   checkout develop
+   merge fix/relay-backpressure
+   checkout main
+   merge develop tag: "v0.3.0"

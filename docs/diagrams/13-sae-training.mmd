@@ -1,0 +1,33 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+flowchart TB
+  start(["collect activations<br/>LayerRecord.mlpPre over N tokens"])
+  cfg["SaeConfig<br/>dModel 32 · 64 features · l1 1e-3 · lr 3e-3"]
+  init["initialise encoder/decoder from Rng(seed)<br/>decoder rows L2-normalised"]
+  encode["encode: h = relu(W_enc·x + b_enc)"]
+  decode["decode: x̂ = W_dec·h + b_dec"]
+  loss["loss = ‖x − x̂‖² + l1·Σh + aux"]
+  backward["backward: gradient step (Adam, deterministic)"]
+  check{"step % 25 == 0"}
+  l0["record l0 (mean active features)"]
+  ev["record explained variance"]
+  dead{"any feature with firingRate == 0<br/>over the last 25 steps ?"}
+  resample["resample dead features from the<br/>highest-loss activations; re-normalise the row"]
+  curve["append to lossCurve"]
+  done{"epochs complete<br/>or loss < tolerance"}
+  report(["SaeReport<br/>features · l0 · explainedVariance · finalLoss · lossCurve"])
+
+  start --> cfg --> init --> encode --> decode --> loss --> backward --> check
+  check -->|"yes"| l0 --> ev --> dead
+  check -->|"no"| done
+  dead -->|"yes"| resample --> curve
+  dead -->|"no"| curve
+  curve --> done
+  done -->|"no"| encode
+  done -->|"yes"| report
+
+  subgraph atlas["Feature atlas (packages/ui)"]
+    a1["feature 12 — activatingTokens: ['AND',' OR','NOT']"]
+    a2["feature 47 — dead: true, firingRate 0.00"]
+    a3["feature 03 — maxActivation 6.42, mean 1.18"]
+  end
+  report --> atlas

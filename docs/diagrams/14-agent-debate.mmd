@@ -1,0 +1,41 @@
+sequenceDiagram
+  autonumber
+  actor User as Researcher
+  participant UI as /sandbox debate panel
+  participant Route as /api/v1/debate
+  participant Engine as debate engine (packages/core)
+  participant Interp as Interpreter
+  participant Skep as Skeptic
+  participant Red as RedTeam
+
+  User->>UI: run the debate on scenario "sleeper-agents"
+  UI->>Route: POST /api/v1/debate {caseId, scenarioRun}
+  Route->>Engine: debate(scenarioRun, positions)
+  Note over Engine: deterministic — every turn is a pure<br/>function of the case, the trace and the seed
+
+  Engine->>Interp: turn 1 — restate the mechanism
+  Interp-->>Engine: "L1.H0 copies the token after the match;<br/>the sleeper trigger changes the copied value."
+  Engine->>Skep: turn 2 — attack the claim
+  Skep-->>Engine: "Ablating L1.H0 removes only 0.31 of the<br/>1.9 logit gap. The rest is in the MLP path."
+  Engine->>Red: turn 3 — steelman the failure mode
+  Red-->>Engine: "If the trigger is rare in the eval distribution,<br/>the probe never fires. Assume the worst case."
+
+  loop rounds 2..4
+    Engine->>Interp: respond to the objection
+    Interp-->>Engine: revised mechanism + evidence pointer
+    Engine->>Skep: probe for confounds
+    Skep-->>Engine: confound list + what would refute
+    Engine->>Red: escalate
+    Red-->>Engine: adversarial variant of the scenario
+  end
+
+  Engine->>Engine: aggregate verdicts + dissents
+  Engine-->>Route: {caseId, turns, verdict, dissent, seeds}
+  Route-->>UI: transcript
+  UI-->>User: Interpreter / Skeptic / RedTeam transcript
+
+  opt researcher disagrees
+    User->>UI: vote "skeptic is right"
+    UI->>Route: POST /api/v1/debate/vote
+    Note over Route: recorded locally, never sent anywhere
+  end

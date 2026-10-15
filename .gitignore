@@ -1,0 +1,68 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+.pnp.cjs
+.yarn/
+
+# builds
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.turbo/
+
+# test output
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# rust / cargo
+target/
+**/target/
+rustfmt.toml.bak
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# go
+*.test
+*.out
+
+# prisma
+packages/db/prisma/*.db
+packages/db/prisma/*.db-journal
+*.db
+*.db-journal
+
+# env — keys are supplied via {env:...} / {file:...} substitution, never committed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# editors & os
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# vercel
+.vercel

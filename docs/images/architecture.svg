@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img">
+<title>cogitatome architecture poster — layers, data flow, and legend</title>
+<rect width="1200" height="760" fill="#05070f"/>
+<text x="60" y="60" font-family="ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="700" fill="#f4f6fb">cogitatome — architecture</text>
+<text x="60" y="88" font-family="ui-monospace, monospace" font-size="15" fill="#8b93b0">deterministic · offline · zero api keys · seed 60602</text>
+
+<!-- layer: experience -->
+<rect x="60" y="120" width="1080" height="130" rx="10" fill="#0b1130" stroke="#5ef1ff" stroke-width="1.5"/>
+<text x="84" y="150" font-family="ui-monospace, monospace" font-size="13" letter-spacing="2" fill="#5ef1ff">EXPERIENCE — apps/web · Next.js 15 + React 19</text>
+<text x="84" y="180" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#f4f6fb">/dissect · /heads · /circuits · /features · /probes · /sandbox · /ethics · /corpus · /timeline</text>
+<text x="84" y="208" font-family="ui-monospace, monospace" font-size="14" fill="#8b93b0">command palette (⌘K) · /api/v1/* · /api/v1/stream (SSE) · /og · /healthz</text>
+
+<!-- layer: engine -->
+<rect x="60" y="270" width="1080" height="130" rx="10" fill="#0b1130" stroke="#ffb347" stroke-width="1.5"/>
+<text x="84" y="300" font-family="ui-monospace, monospace" font-size="13" letter-spacing="2" fill="#ffb347">ENGINE — packages/core · pure + deterministic</text>
+<text x="84" y="330" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#f4f6fb">constructed induction transformer · heads · attribution · patching · circuits · SAE · probes · metrics</text>
+<text x="84" y="358" font-family="ui-monospace, monospace" font-size="14" fill="#8b93b0">domain: corpus + BM25 · glossary · ethics · 8 scenarios · 3-agent debate</text>
+
+<!-- layer: world -->
+<rect x="60" y="420" width="1080" height="110" rx="10" fill="#0b1130" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="84" y="450" font-family="ui-monospace, monospace" font-size="13" letter-spacing="2" fill="#a78bfa">WORLD — packages/seed + packages/ui + packages/sdk</text>
+<text x="84" y="480" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#f4f6fb">573 arXiv papers · 64 media entries · activations + dictionary · design system · typed client</text>
+<text x="84" y="506" font-family="ui-monospace, monospace" font-size="14" fill="#8b93b0">scripts/harvest-arxiv.ts · scripts/seed.ts · scripts/gen-assets.mjs · scripts/verify-links.ts</text>
+
+<!-- layer: polyglot -->
+<rect x="60" y="550" width="1080" height="110" rx="10" fill="#0b1130" stroke="#b8f56b" stroke-width="1.5"/>
+<text x="84" y="580" font-family="ui-monospace, monospace" font-size="13" letter-spacing="2" fill="#b8f56b">POLYGLOT — each with own CI job, README, tests, Dockerfile</text>
+<text x="84" y="610" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#f4f6fb">crates/engine (Rust numerics) · services/agents (Python SAE + probes) · services/relay (Go SSE fan-out)</text>
+<text x="84" y="636" font-family="ui-monospace, monospace" font-size="14" fill="#8b93b0">each extends the lab · none gates the demo</text>
+
+<!-- legend -->
+<text x="60" y="700" font-family="ui-monospace, monospace" font-size="13" letter-spacing="2" fill="#8b93b0">LEGEND</text>
+<line x1="60" y1="722" x2="140" y2="722" stroke="#5ef1ff" stroke-width="3"/>
+<text x="150" y="727" font-family="ui-monospace, monospace" font-size="14" fill="#f4f6fb">user path</text>
+<line x1="300" y1="722" x2="380" y2="722" stroke="#ffb347" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="390" y="727" font-family="ui-monospace, monospace" font-size="14" fill="#f4f6fb">data flow</text>
+<rect x="560" y="710" width="26" height="26" rx="4" fill="#0b1130" stroke="#a78bfa"/>
+<text x="596" y="729" font-family="ui-monospace, monospace" font-size="14" fill="#f4f6fb">offline store</text>
+</svg>

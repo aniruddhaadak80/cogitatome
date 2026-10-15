@@ -1,0 +1,43 @@
+[package]
+name = "cogitatome-engine"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+license = "MIT"
+description = "Deterministic numerics engine for the cogitatome interpretability observatory: splitmix64 RNG, tensor-lite transformer math, interpretability primitives and a recorded tiny-transformer forward pass."
+homepage = "https://github.com/aniruddhaadak/cogitatome"
+repository = "https://github.com/aniruddhaadak/cogitatome"
+documentation = "https://docs.rs/cogitatome-engine"
+readme = "README.md"
+keywords = ["interpretability", "transformer", "machine-learning", "neural-networks", "wasm"]
+categories = ["science", "mathematics", "wasm"]
+include = [
+  "src/**/*.rs",
+  "tests/**/*.rs",
+  "examples/**/*.rs",
+  "README.md",
+  "Cargo.toml",
+]
+
+[lib]
+name = "cogitatome_engine"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# The engine is std-only and dependency-free by default, so `cargo test` and
+# `cargo build` stay native, fast and hermetic. The wasm-bindgen glue in
+# `src/wasm_bindings.rs` is only compiled when this feature is switched on.
+default = []
+wasm = ["dep:wasm-bindgen"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2.100", optional = true }
+
+# No dev-dependencies on purpose: the whole test suite is std-only.
+[dev-dependencies]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

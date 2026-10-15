@@ -1,0 +1,24 @@
+name: go
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ["services/relay/**", ".github/workflows/go.yml"]
+  pull_request:
+    paths: ["services/relay/**", ".github/workflows/go.yml"]
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: services/relay
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - run: gofmt -l .
+      - run: go vet ./...
+      - run: go test ./... -race -count=1

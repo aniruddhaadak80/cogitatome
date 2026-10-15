@@ -1,0 +1,35 @@
+stateDiagram-v2
+  direction TB
+  [*] --> latent : randomWeights seed 20260914
+
+  latent: latent — no structure yet<br/>prevTokenScore ≈ 0.0, entropy ≈ 1.0, role "diffuse"
+
+  previousToken: previous-token — L0.H0<br/>attends to j = i−1<br/>prevTokenScore → 1.0
+
+  kComposed: K-composed — L0.H0 output feeds L1 keys<br/>shifted subspace holds "the token before j"<br/>the composition is now possible
+
+  induction: induction — L1.H0<br/>matches current token against "token before j"<br/>copies what followed the match forward
+
+  copying: copying — value copy dominates<br/>focus → 1.0, topKeys concentrated
+
+  positional: positional — attends on sinusoidal position code<br/>entropy low, firstTokenScore low
+
+  sink: attention-sink<br/>firstTokenScore → 1.0
+
+  latent --> previousToken : headBiasCurvature 3 · recency bias<br/>prevTokenBias(i, j) peaked at distance 1
+  latent --> positional : query/key read the position subspace
+  latent --> sink : first-token mass accumulation
+  previousToken --> kComposed : wo writes the token code into<br/>SUBSPACE.shiftedStart..shiftedEnd
+  kComposed --> induction : L1 wk reads the shifted subspace,<br/>wv reads the token subspace, headGain 4
+  induction --> copying : recency 0.25 picks the most recent match
+  copying --> induction
+
+  previousToken --> ablation : ablateHead(layer 0, head 0)
+  kComposed --> ablation : ablateHead(layer 0, head 0)
+  induction --> ablation : ablateHead(layer 1, head 0)
+
+  ablation: ablation — headGain := 0<br/>the circuit is severed, the trace re-runs<br/>Δlogit on the target token is the causal claim
+  ablation --> latent : restore weights · re-seed
+
+  induction --> [*] : ForwardTrace recorded
+  ablation --> [*]

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img">
+<title>cogitatome social card</title>
+<rect width="1200" height="630" fill="#05070f"/>
+<circle cx="1020" cy="110" r="210" fill="#0b1130" opacity="0.8"/>
+<circle cx="1020" cy="110" r="120" fill="none" stroke="#5ef1ff" stroke-width="3" opacity="0.5"/>
+<circle cx="1020" cy="110" r="60" fill="none" stroke="#ffb347" stroke-width="3" opacity="0.6"/>
+<path d="M 90 103.5 C 111 103.5, 111 120 133.5 120" fill="none" stroke="#5ef1ff" stroke-width="3.6" stroke-linecap="round" opacity="0.9"/><path d="M 90 114.0 C 111 114.0, 111 120 133.5 120" fill="none" stroke="#ffb347" stroke-width="3.6" stroke-linecap="round" opacity="0.9"/><path d="M 90 124.5 C 111 124.5, 111 120 133.5 120" fill="none" stroke="#a78bfa" stroke-width="3.6" stroke-linecap="round" opacity="0.9"/><circle cx="133.5" cy="120" r="6.6" fill="#5ef1ff"/>
+<text x="170" y="132" font-family="ui-sans-serif, system-ui, sans-serif" font-size="38" font-weight="700" fill="#f4f6fb">cogitatome</text>
+<text x="80" y="360" font-family="ui-sans-serif, system-ui, sans-serif" font-size="76" font-weight="700" fill="#f4f6fb">Open the brain.</text>
+<text x="80" y="450" font-family="ui-sans-serif, system-ui, sans-serif" font-size="76" font-weight="700" fill="#5ef1ff">Read the circuit.</text>
+<text x="80" y="540" font-family="ui-monospace, monospace" font-size="26" fill="#8b93b0">interpretability observatory · alignment laboratory</text>
+</svg>

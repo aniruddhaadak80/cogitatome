@@ -1,0 +1,67 @@
+# One command runs the whole lab: `docker compose up`.
+#
+# web    — the Next.js app (port 3000)
+# agents — the Python interpretability worker (port 8000)
+# relay  — the Go telemetry relay (port 8090)
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - AGENTS_SERVICE_URL=http://agents:8000
+      - RELAY_URL=http://relay:8090
+    depends_on:
+      agents:
+        condition: service_started
+      relay:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  agents:
+    build: ./services/agents
+    ports:
+      - "8000:8000"
+    environment:
+      - CORS_ORIGINS=*
+      - PORT=8000
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  relay:
+    build: ./services/relay
+    ports:
+      - "8090:8090"
+    environment:
+      - RELAY_ADDR=:8090
+      - RELAY_BUFFER_SIZE=4096
+      - RELAY_SIM_SEED=7
+      - RELAY_SIM_INTERVAL_MS=250
+      - RELAY_CORS_ORIGINS=*
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8090/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Optional persistence. Uncomment to run Postgres instead of SQLite.
+  # db:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     - POSTGRES_USER=cogitatome
+  #     - POSTGRES_PASSWORD=cogitatome
+  #     - POSTGRES_DB=cogitatome
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #
+  # volumes:
+  #   pgdata:

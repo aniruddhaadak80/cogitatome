@@ -1,0 +1,52 @@
+flowchart LR
+  subgraph local["Local — developer"]
+    dev["developer workstation"]
+    hook["git commit (Conventional Commits)"]
+  end
+
+  subgraph gh["GitHub — aniruddhaadak80/cogitatome"]
+    push["git push → branch"]
+    pr["pull request"]
+    ci[".github/workflows/ci.yml<br/>ubuntu-latest · oven-sh/setup-bun@v2"]
+    typecheck["bun run typecheck"]
+    lint["bun run lint"]
+    test["bun run test (vitest run)"]
+    e2e["bun run e2e (Playwright)"]
+    build["bun run build"]
+    loc["bun scripts/loc-count.mjs"]
+    main["push to main"]
+    tag["git tag v*"]
+  end
+
+  subgraph deploy["Deployment targets"]
+    vercel["Vercel — production<br/>deploy-vercel.yml (prebuilt)"]
+    docker["Docker image<br/>ghcr.io/aniruddhaadak80/cogitatome"]
+    fly["Fly.io — web + agents + relay"]
+    railway["Railway / Render — same image"]
+  end
+
+  subgraph release["Release"]
+    changelog["Generate changelog"]
+    ghrelease["GitHub Release + binaries"]
+  end
+
+  subgraph quality["Scheduled"]
+    codeql["CodeQL — javascript-typescript + actions"]
+    linkcheck["link-check.yml — weekly<br/>bun scripts/verify-links.ts"]
+    dependabot["dependabot — npm · github-actions · docker"]
+  end
+
+  dev --> hook --> push --> pr
+  pr --> ci
+  ci --> typecheck --> lint --> test --> e2e --> build --> loc
+  loc -->|"all green"| main
+  main --> vercel
+  main --> docker
+  docker --> fly
+  docker --> railway
+  tag --> release
+  changelog --> ghrelease
+  pr -.-> codeql
+  main -.-> linkcheck
+  pr -.-> dependabot
+  vercel -. "https://cogitatome.vercel.app" .-> dev

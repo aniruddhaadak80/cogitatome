@@ -1,0 +1,37 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+flowchart TB
+  subgraph host["Docker host / Fly machine"]
+    subgraph net["bridge network cogitatome"]
+      web["cogitatome-web<br/>next start<br/>:3000<br/>healthcheck GET /"]
+      agents["cogitatome-agents<br/>uvicorn<br/>:8000<br/>healthcheck GET /healthz"]
+      relay["cogitatome-relay<br/>go run ./cmd/relay<br/>:8090<br/>healthcheck GET /healthz<br/>readyz GET /readyz"]
+      engine["cogitatome-engine<br/>cargo run --example probe<br/>(wasm build, optional)"]
+    end
+
+    subgraph volumes["Named volumes"]
+      vSeed["cogitatome-seed<br/>(/data — corpus.json, worlds, models)"]
+      vIndex["cogitatome-index<br/>(/data/index — BM25 postings)"]
+      vLogs["cogitatome-logs<br/>(/var/log/cogitatome)"]
+    end
+
+    subgraph edge["Edge"]
+      lb["Fly proxy / nginx<br/>TLS termination<br/>X-Accel-Buffering: no"]
+    end
+  end
+
+  browser["Browser — EventSource('/api/v1/stream')"]
+
+  browser -->|"HTTPS 443"| lb
+  lb -->|"proxy_pass :3000"| web
+  web -->|"POST /v1/sae/train · /v1/probes/fit · /v1/patch/sweep"| agents
+  web -->|"SSE proxy → GET /v1/stream?since="| relay
+  agents --> vSeed
+  agents --> vIndex
+  web --> vSeed
+  relay --> vLogs
+  agents --> vLogs
+
+  relay -->|"text/event-stream"| web
+  web -->|"text/event-stream"| browser
+  agents -->|"/metrics (uvicorn) + /healthz"| lb
+  relay -->|"GET /metrics (Prometheus text)"| lb

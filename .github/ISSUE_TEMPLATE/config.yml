@@ -1,0 +1,6 @@
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussion
+    url: https://github.com/aniruddhaadak80/cogitatome/discussions
+    about: Ask how-tos, show dissections, propose ideas before opening an issue.

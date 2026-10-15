@@ -1,0 +1,30 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+stateDiagram-v2
+  direction TB
+  [*] --> live : open /dissect
+
+  live: live session<br/>tokens + model + analysis state<br/>is the working copy, never a snapshot
+
+  captured: captured — TimelineSnapshot<br/>index · label · state · checksum<br/>(checksum is a FNV-1a hash of the trace)
+
+  rewound: rewound — the timeline cursor<br/>points at an earlier index;<br/>the UI reads state from the snapshot
+
+  diffed: diffed — side-by-side<br/>Δresidual norm · Δlogit · head deltas
+
+  live --> captured : "snapshot(label)" — Ctrl/Cmd-S<br/>state is frozen, checksum computed
+  captured --> captured : snapshot again — index increments
+  captured --> live : "return to live"
+  captured --> rewound : "rewind to index k"<br/>0 ≤ k ≤ snapshots.length − 1
+  rewound --> captured : step forward one index
+  rewound --> rewound : scrub the slider
+  rewound --> diffed : "compare with live"
+  rewound --> diffed : "compare with another snapshot"
+  diffed --> rewound : close the diff panel
+  diffed --> live : "keep current"
+  live --> [*] : session ends (snapshots are dropped —<br/>nothing is uploaded)
+
+  note right of captured
+    Snapshots are immutable. Rewinding never
+    mutates the trace: a new ForwardTrace is
+    recomputed from the snapshot's tokens.
+  end note
