@@ -1,7 +1,4 @@
 {
-  "buildCommand": "cd apps/web && bun run build",
-  "installCommand": "bun install --frozen-lockfile",
-  "regions": ["iad1"],
   "github": { "silent": true },
   "headers": [
     {
