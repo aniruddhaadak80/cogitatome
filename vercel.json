@@ -1,5 +1,6 @@
 {
-  "buildCommand": "bun run --cwd apps/web build",
+  "outputDirectory": "apps/web/.next",
+  "buildCommand": "cd apps/web && bun run build",
   "installCommand": "bun install --frozen-lockfile",
   "github": { "silent": true },
   "headers": [
