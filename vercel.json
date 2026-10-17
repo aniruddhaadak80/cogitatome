@@ -1,5 +1,6 @@
 {
-  "buildCommand": "cd apps/web && bun run build",
+  "buildCommand": "bun run --cwd apps/web build",
+  "installCommand": "bun install --frozen-lockfile",
   "github": { "silent": true },
   "headers": [
     {
