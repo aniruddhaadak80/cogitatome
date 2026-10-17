@@ -2,7 +2,9 @@
   "services": {
     "web": {
       "framework": "nextjs",
-      "root": "apps/web"
+      "root": "apps/web",
+      "buildCommand": "bun run build",
+      "installCommand": "bun install --frozen-lockfile"
     }
   },
   "github": { "silent": true },
