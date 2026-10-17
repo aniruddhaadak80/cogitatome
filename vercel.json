@@ -1,7 +1,10 @@
 {
-  "outputDirectory": "apps/web/.next",
-  "buildCommand": "cd apps/web && bun run build",
-  "installCommand": "bun install --frozen-lockfile",
+  "services": {
+    "web": {
+      "framework": "nextjs",
+      "entrypoint": "apps/web"
+    }
+  },
   "github": { "silent": true },
   "headers": [
     {
