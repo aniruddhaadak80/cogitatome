@@ -4,7 +4,7 @@
       "framework": "nextjs",
       "root": "apps/web",
       "buildCommand": "bun run build",
-      "installCommand": "bun install --frozen-lockfile"
+      "installCommand": "cd ../.. && bun install --frozen-lockfile"
     }
   },
   "github": { "silent": true },
