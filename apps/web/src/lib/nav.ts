@@ -14,7 +14,10 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   { href: "/sandbox", label: "Sandbox", blurb: "Run eight alignment scenarios with visible reasoning." },
   { href: "/ethics", label: "Ethics", blurb: "Six ethical positions argue over an AI moral case." },
   { href: "/corpus", label: "Corpus", blurb: "Search 600+ real papers, talks, posts and threads." },
-  { href: "/timeline", label: "Timeline", blurb: "Rewind and diff any simulation state." }
+  { href: "/timeline", label: "Timeline", blurb: "Rewind and diff any simulation state." },
+  { href: "/ablation", label: "Ablation", blurb: "Remove every head and rank by importance." },
+  { href: "/rollout", label: "Rollout", blurb: "Compose attention matrices across layers." },
+  { href: "/attribution", label: "Attribution", blurb: "Which input tokens matter for the prediction." }
 ];
 
 export const NAV_MAP: ReadonlyMap<string, NavSection> = new Map(NAV_SECTIONS.map((s) => [s.href, s]));

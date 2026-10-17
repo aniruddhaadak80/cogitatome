@@ -11,13 +11,5 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
-  ],
-  "services": {
-    "web": {
-      "rootDirectory": "apps/web",
-      "framework": "nextjs",
-      "buildCommand": "bun run build",
-      "installCommand": "bun install --frozen-lockfile"
-    }
-  }
+  ]
 }
