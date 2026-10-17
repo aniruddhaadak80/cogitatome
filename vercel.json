@@ -2,7 +2,7 @@
   "services": {
     "web": {
       "framework": "nextjs",
-      "entrypoint": "apps/web"
+      "root": "apps/web"
     }
   },
   "github": { "silent": true },
