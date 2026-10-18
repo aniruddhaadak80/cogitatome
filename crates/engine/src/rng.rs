@@ -149,7 +149,7 @@ impl Rng {
     /// not positive — callers can treat that as "nothing to sample".
     pub fn weighted_index(&mut self, weights: &[f64]) -> Option<usize> {
         let total: f64 = weights.iter().sum();
-        if !(total > 0.0) || !total.is_finite() {
+        if total <= 0.0 || !total.is_finite() {
             return None;
         }
         let mut target = self.f64() * total;
@@ -225,10 +225,10 @@ mod tests {
     #[test]
     fn f64_matches_the_reference_stream() {
         let expected = [
-            0.741_564_878_771_823_31,
-            0.159_910_392_876_920_10,
-            0.278_601_130_255_138_66,
-            0.344_190_716_523_637_53,
+            0.741_564_878_771_823_3,
+            0.159_910_392_876_920_1,
+            0.278_601_130_255_138_7,
+            0.344_190_716_523_637_5,
         ];
         let mut rng = Rng::new(42);
         for want in expected {
