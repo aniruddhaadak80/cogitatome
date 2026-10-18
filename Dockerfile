@@ -6,8 +6,8 @@
 FROM oven/bun:1.3.14 AS deps
 WORKDIR /app
 COPY package.json bun.lock ./
-COPY apps/web/package.json ./apps/web/package.json
-COPY packages/*/package.json ./packages/*/
+COPY apps ./apps
+COPY packages ./packages
 RUN bun install --frozen-lockfile
 
 FROM oven/bun:1.3.14 AS builder
