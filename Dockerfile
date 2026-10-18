@@ -3,20 +3,20 @@
 # Multi-stage: install with Bun, build the Next.js app, then run it.
 # NOTE: unbuilt locally (no Docker daemon on this machine) — CI builds and
 # pushes to GHCR on every push to main. See .github/workflows/docker.yml.
-FROM oven/bun:1.3.14 AS deps
+FROM oven/bun:1.4.3 AS deps
 WORKDIR /app
 COPY package.json bun.lock ./
 COPY apps ./apps
 COPY packages ./packages
 RUN bun install --frozen-lockfile
 
-FROM oven/bun:1.3.14 AS builder
+FROM oven/bun:1.4.3 AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
 
-FROM oven/bun:1.3.14-slim AS runner
+FROM oven/bun:1.4.3-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 RUN useradd -u 1001 -m appuser 2>/dev/null || adduser --disabled-password --gecos "" appuser 2>/dev/null || true
