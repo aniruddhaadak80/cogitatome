@@ -27,6 +27,7 @@
 
 import { readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
+import { isWithdrawnUpstream } from "./arxiv";
 
 const ROOT = resolve(import.meta.dir, "..");
 const PAPERS_PATH = resolve(ROOT, "packages/seed/data/corpus.papers.json");
@@ -50,7 +51,7 @@ export interface LinkRecord {
 }
 
 export interface CheckResult extends LinkRecord {
-  readonly status: number | "network-error" | "skipped";
+  readonly status: number | "network-error" | "skipped" | "withdrawn-upstream";
   readonly method: "HEAD" | "GET" | "-";
   readonly ok: boolean;
   readonly ms: number;
@@ -137,6 +138,20 @@ async function probe(link: LinkRecord, timeoutMs: number): Promise<CheckResult> 
       if (res.ok) {
         return { ...link, status: res.status, method, ok: true, ms: Date.now() - started };
       }
+      // A withdrawn arXiv paper keeps its abstract page but stops serving
+      // the PDF, so /pdf/<id> 404s while the paper is still listed. That is
+      // the world moving under a snapshot corpus, not a rotted link, so it
+      // is reported separately instead of failing the sweep.
+      if (res.status === 404 && (await isWithdrawnUpstream(link.url, timeoutMs))) {
+        return {
+          ...link,
+          status: "withdrawn-upstream",
+          method,
+          ok: true,
+          ms: Date.now() - started,
+          detail: "arXiv paper withdrawn upstream; abstract page still resolves"
+        };
+      }
       // 405/501 means "the host dislikes this method", not "the link is dead".
       if (res.status !== 405 && res.status !== 501) {
         return { ...link, status: res.status, method, ok: false, ms: Date.now() - started };
@@ -182,8 +197,10 @@ export async function checkAll(
           cursor += 1;
           const link = links[i]!;
           results[i] = await probe(link, timeoutMs);
-          if (results[i]!.ok) process.stdout.write(`  ok   ${results[i]!.status}  ${link.url}\n`);
-          else process.stderr.write(`  FAIL ${results[i]!.status}  ${link.url}\n`);
+          if (results[i]!.status === "withdrawn-upstream") {
+            process.stdout.write(`  gone ${results[i]!.status}  ${link.url}\n`);
+          } else if (results[i]!.ok) process.stderr.write(`  FAIL ${results[i]!.status}  ${link.url}\n`);
+          else process.stdout.write(`  ok   ${results[i]!.status}  ${link.url}\n`);
         }
       })()
     );
@@ -222,13 +239,15 @@ const elapsedMs = Date.now() - started;
 
 const byHost = new Map<string, { ok: number; fail: number }>();
 const failures: CheckResult[] = [];
+const withdrawn: CheckResult[] = [];
 for (const r of results) {
   const host = new URL(r.url).hostname.replace(/^www\./, "");
   const bucket = byHost.get(host) ?? { ok: 0, fail: 0 };
   if (r.ok) bucket.ok += 1;
   else bucket.fail += 1;
   byHost.set(host, bucket);
-  if (!r.ok) failures.push(r);
+  if (r.status === "withdrawn-upstream") withdrawn.push(r);
+  else if (!r.ok) failures.push(r);
 }
 
 if (jsonOut) {
@@ -238,9 +257,11 @@ if (jsonOut) {
         checked: results.length,
         ok: results.length - failures.length,
         failed: failures.length,
+        withdrawnUpstream: withdrawn.length,
         elapsedMs,
         hosts: Object.fromEntries([...byHost].sort((a, b) => b[1].ok + b[1].fail - (a[1].ok + a[1].fail))),
-        failures: failures.map((f) => ({ url: f.url, origin: f.origin, status: f.status, detail: f.detail }))
+        failures: failures.map((f) => ({ url: f.url, origin: f.origin, status: f.status, detail: f.detail })),
+        withdrawn: withdrawn.map((w) => ({ url: w.url, origin: w.origin, detail: w.detail }))
       },
       null,
       2
@@ -265,6 +286,10 @@ if (jsonOut) {
     process.stdout.write(`  FAIL ${f.url}\n       origin=${f.origin} status=${f.status} detail=${f.detail ?? "-"}\n`);
   }
   if (failures.length > 20) process.stdout.write(`  ... and ${failures.length - 20} more\n`);
+  for (const w of withdrawn.slice(0, 20)) {
+    process.stdout.write(`  gone ${w.url}\n       origin=${w.origin} detail=${w.detail ?? "-"}\n`);
+  }
+  if (withdrawn.length > 20) process.stdout.write(`  ... and ${withdrawn.length - 20} more\n`);
 }
 
 if (offline) {
@@ -275,6 +300,12 @@ if (offline) {
 if (failures.length > 0) {
   process.stderr.write(`\n  FAIL: ${failures.length} of ${results.length} links did not resolve.\n`);
   process.exit(1);
+}
+if (withdrawn.length > 0) {
+  process.stdout.write(
+    `\n  PASS: every corpus link resolved (${withdrawn.length} withdrawn upstream by their authors).\n`
+  );
+  process.exit(0);
 }
 process.stdout.write("\n  PASS: every corpus link resolved.\n");
 process.exit(0);
