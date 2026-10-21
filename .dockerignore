@@ -1,0 +1,23 @@
+# Build context hygiene. The image installs its own dependencies inside the
+# deps stage, so the host's node_modules must never enter the context: a
+# Windows/macOS tree copied over the container's install breaks the build
+# (and `bun run build` then fails with "next: command not found").
+node_modules
+**/node_modules
+.next
+**/.next
+.turbo
+**/.turbo
+target
+**/target
+coverage
+**/coverage
+test-results
+**/test-results
+playwright-report
+**/playwright-report
+.git
+# Secrets stay out of the image, exactly as they stay out of git.
+.env
+.env.*
+!.env.example
