@@ -12,7 +12,14 @@ RUN bun install --frozen-lockfile
 
 FROM oven/bun:1.3.14 AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Bun's default linker is "isolated": every workspace keeps its own
+# node_modules (apps/web/node_modules/next, packages/core/node_modules/zod, ...)
+# with the real packages in the root node_modules/.bun store. Copying only
+# /app/node_modules therefore drops `next` and the build dies with
+# "next: command not found" -- so the whole installed tree comes across.
+COPY --from=deps /app ./
+# The source is laid over the install tree; .dockerignore keeps the host's
+# node_modules out of the context so it cannot clobber the container's.
 COPY . .
 RUN bun run build
 
