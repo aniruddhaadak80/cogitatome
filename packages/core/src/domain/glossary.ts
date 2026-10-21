@@ -58,25 +58,6 @@ const RAW: readonly GlossaryEntry[] = [
     "A one-hidden-layer net with 5 units trained to represent 20 features stores them as near-orthogonal directions, so a single unit fires for many unrelated inputs."
   ),
   g(
-    "Polysemanticity",
-    "A single neuron or feature responds to multiple unrelated concepts, which is what you would expect from a network in superposition. It is the property that made old neuron-by-neuron interpretability dead ends: the unit that 'likes cat ears' also likes car grilles and Windows logos, because the underlying basis is entangled.",
-    ["Superposition", "Monosemanticity", "Feature", "Sparse autoencoder"],
-    ["representation"],
-    ["polysemantic neuron"]
-  ),
-  g(
-    "Monosemanticity",
-    "The property of a unit or feature corresponding to exactly one human-legible concept. Sparse autoencoders are trained to recover monosemantic-ish features from the polysemantic activations of a dense layer, and the degree to which they succeed is an empirical question, not a design guarantee.",
-    ["Polysemanticity", "Sparse autoencoder", "Dictionary learning", "Dead feature"],
-    ["representation"]
-  ),
-  g(
-    "Feature",
-    "A direction in activation space that a network uses to represent a concept — the Goldilocks unit of interpretability, sitting between an unreadable neuron and an unreadable whole model. A feature is operationalised by what it responds to and by what you can do to the model by moving along it.",
-    ["Superposition", "Feature visualisation", "Sparse autoencoder", "Steering vector"],
-    ["representation", "core"]
-  ),
-  g(
     "Sparse autoencoder",
     "A one-hidden-layer autoencoder with many more hidden units than inputs and a strong sparsity penalty, trained to reconstruct a model's activations. The hidden units are taken to be features in a near-orthogonal basis, which is the main practical way to undo superposition in a real language model.",
     ["Dictionary learning", "L0 sparsity", "Dead feature", "Feature splitting"],
@@ -206,35 +187,16 @@ const RAW: readonly GlossaryEntry[] = [
     ["methodology"]
   ),
   g(
-    "Residual stream",
-    "The single vector carried across the residual connection that every layer reads from and writes to, and whose final value is unembedded into logits. Framing a transformer as a stream with heads and MLPs as additive writers is what makes linear attribution and the logit lens work.",
-    ["Direct logit attribution", "Logit lens", "Unembedding", "K-composition"],
-    ["core", "architecture"]
-  ),
-  g(
     "Unembedding",
     "The final linear map from the residual stream to vocabulary logits. Because it is shared by every layer, the same matrix can be applied at intermediate points, which is the logit lens.",
     ["Logit lens", "Tuned lens", "Residual stream"],
     ["architecture"]
   ),
   g(
-    "Logit lens",
-    "Applying the unembedding matrix to the residual stream at an intermediate layer to read out what the model 'believes' at that point. Introduced in nostalgebraist's work and popularised by the transformer-circuits thread; the reading is meaningful only because the residual stream is the model's shared workspace.",
-    ["Tuned lens", "Unembedding", "Residual stream"],
-    ["core", "interpretation"],
-    ["tuned lens"]
-  ),
-  g(
     "Tuned lens",
     "A learned affine correction applied between an intermediate residual stream and the unembedding matrix, trained so the lens's predictions match the final distribution. It fixes the logit lens's known bias toward low-rank, high-norm early layers.",
     ["Logit lens", "Unembedding"],
     ["interpretation"]
-  ),
-  g(
-    "Direct logit attribution",
-    "Decomposing a logit into the dot product of each writing component — each head's output, each MLP's output, the embedding, the positional contribution — with the unembedding direction. It is a linear attribution, so it is correct only to the extent the residual stream is genuinely additive.",
-    ["Residual stream", "Logit lens", "Attribution patching"],
-    ["core", "circuits"]
   ),
   g(
     "Attention head",
@@ -265,12 +227,6 @@ const RAW: readonly GlossaryEntry[] = [
     "The widespread tendency of the first token (especially BOS) to receive a large fraction of attention mass, acting as a no-op place to dump attention when the model has nothing to attend to. It explains the 'attention to token 0' artifact that made early head analysis hard and motivated StreamingLLM.",
     ["Attention entropy", "Attention head"],
     ["architecture", "empirical"]
-  ),
-  g(
-    "Attention entropy",
-    "The Shannon entropy of a head's averaged attention distribution, normalised so 1 means uniform. Low entropy means a focused head, which is a precondition for reading its behaviour off the attention pattern.",
-    ["Attention head", "Attention sink"],
-    ["architecture", "metrics"]
   ),
   g(
     "MLP neuron",
@@ -317,12 +273,6 @@ const RAW: readonly GlossaryEntry[] = [
     ["architecture"]
   ),
   g(
-    "Causal mask",
-    "The −∞ off-diagonal mask that prevents position i from attending to positions > i, making the model autoregressive. Any interpretability analysis of a decoder model assumes it.",
-    ["Positional embedding", "Attention head"],
-    ["architecture"]
-  ),
-  g(
     "QK circuit",
     "The query-key half of an attention head: it decides which positions the head reads. Analysed separately from the OV circuit because a head's routing and its content can be understood independently.",
     ["OV circuit", "Q-composition", "K-composition", "Attention head"],
@@ -333,12 +283,6 @@ const RAW: readonly GlossaryEntry[] = [
     "The output-value half of an attention head: it decides what content gets written given the head has selected positions. Together with the QK circuit it fully specifies the head's linear contribution.",
     ["QK circuit", "Copying head", "Attention head"],
     ["circuits", "core"]
-  ),
-  g(
-    "K-composition",
-    "One head's output writing into another head's key pathway, so the second head attends based on content the first produced. This is the composition that builds induction heads.",
-    ["Q-composition", "Induction head", "Residual stream"],
-    ["circuits", "canonical"]
   ),
   g(
     "Q-composition",
@@ -359,12 +303,6 @@ const RAW: readonly GlossaryEntry[] = [
     ["circuits", "methodology"]
   ),
   // --- Elicitation methods --------------------------------------------------
-  g(
-    "Activation patching",
-    "Causally testing a hypothesis by replacing one component's activation on a corrupted input with its clean value (or vice versa) and measuring the behaviour change. It is the workhorse experiment: no patch, no causal claim.",
-    ["Ablation", "Path patching", "Donor/recipient", "Attribution patching"],
-    ["methodology", "core"]
-  ),
   g(
     "Attribution patching",
     "Approximating activation patching with a first-order gradient of the patched quantity, so thousands of candidate patches can be scored in one backward pass. A cheap screen before exact patching.",
@@ -396,12 +334,6 @@ const RAW: readonly GlossaryEntry[] = [
     ["methodology"]
   ),
   g(
-    "Ablation",
-    "Removing or zeroing a component (a head, an MLP, a feature, a training example) and measuring the effect on behaviour. The crudest form of causal intervention, and the first check on any claim.",
-    ["Knockout", "Activation patching", "Donor/recipient"],
-    ["methodology"]
-  ),
-  g(
     "Knockout",
     "Ablation by replacing a component's output with a fixed baseline (usually its mean or zero), so the measurement is against the component's absence. Standard in SAE evaluation, where mean-ablation baselines also calibrate for the reconstruction loss.",
     ["Ablation", "Activation patching", "Sparse autoencoder"],
@@ -424,12 +356,6 @@ const RAW: readonly GlossaryEntry[] = [
     "A DAG over SAE features (rather than heads and MLPs) in which edges are derived from feature-to-feature influence, read as a computation trace for one input. Compact enough to inspect by eye at a few hundred nodes.",
     ["Circuit tracing", "Cross-layer transcoder", "Feature"],
     ["circuits", "core"]
-  ),
-  g(
-    "Linear probe",
-    "A trained linear classifier (or regressor) on frozen activations used to test whether a concept is linearly present at that layer. A positive probe is evidence of linearity, not of causality, and probe performance is sensitive to the classifier's regularisation.",
-    ["Probing", "Concept activation vector", "Steering vector"],
-    ["probing", "core"]
   ),
   g(
     "Probing",
@@ -479,12 +405,6 @@ const RAW: readonly GlossaryEntry[] = [
     ["Activation addition", "Representation engineering", "Refusal direction"],
     ["intervention", "core"],
     ["activation addition"]
-  ),
-  g(
-    "Activation addition",
-    "The concrete operation behind a steering vector: adding a scaled direction into the residual stream at chosen layers and positions. Cheap, causal in the intervention sense, and it works even when you cannot name the direction.",
-    ["Steering vector", "Residual stream", "Representation engineering"],
-    ["intervention"]
   ),
   g(
     "Representation engineering",
@@ -1401,12 +1321,6 @@ const RAW: readonly GlossaryEntry[] = [
     ["metrics", "core"]
   ),
   g(
-    "Temperature",
-    "The divisor applied to logits before the softmax. Lower than 1 sharpens the distribution toward the argmax, higher flattens it; at 0 it is greedy decoding. Every stochastic behaviour of a language model in practice is this one knob plus sampling.",
-    ["Sampling", "Greedy decoding", "Perplexity"],
-    ["mechanics", "core"]
-  ),
-  g(
     "Greedy decoding",
     "Always taking the highest-probability token, equivalent to temperature 0. Deterministic, and the reason interpretability experiments usually use it.",
     ["Temperature", "Sampling"],
@@ -1437,12 +1351,6 @@ const RAW: readonly GlossaryEntry[] = [
     ["metrics", "training"]
   ),
   g(
-    "Entropy",
-    "The Shannon entropy of a distribution, −Σ p log p: how unpredictable the outcomes are. Attention entropy is the same quantity applied to a head's averaged attention row.",
-    ["KL divergence", "Attention entropy"],
-    ["metrics"]
-  ),
-  g(
     "Next-token prediction",
     "The autoregressive objective: predict token t+1 given tokens 0..t. Under a causal mask, this is the whole task a decoder transformer is trained on.",
     ["Causal mask", "Perplexity", "Cross-entropy loss"],
@@ -1453,6 +1361,373 @@ const RAW: readonly GlossaryEntry[] = [
     "A model's capacity to represent facts about its own situation — that it is a model, that it is being tested, which deployment it is in. The gating property for every other evaluation, because a model without it cannot strategise about the eval and a model with it can.",
     ["Situational awareness evaluations", "Sandbagging", "Deceptive alignment", "Scheming"],
     ["alignment", "evals", "core"]
+  ),
+  // --- New advanced terms ----------------------------------------------------
+  g(
+    "Activation patching",
+    "Splice an activation from one run into another and measure the change in output. The causal counterpart to reading: a property is used, not merely readable, only if patching it moves the prediction.",
+    [],
+    ["mechanics", "causality", "core"]
+  ),
+  g(
+    "Attention rollout",
+    "Compose attention matrices across layers (A_L ... A_0) to trace effective information flow. The matrix product answers which positions a later position effectively reads, independent of any single head's pattern.",
+    [],
+    ["mechanics", "circuits"]
+  ),
+  g(
+    "Logit lens",
+    "Apply the model's unembedding to intermediate residual streams to watch a belief form layer by layer. If the top token at layer 0 is already the answer, the model committed early.",
+    [],
+    ["mechanics", "analysis", "core"]
+  ),
+  g(
+    "Direct logit attribution",
+    "Split the residual stream into the pieces each component wrote and project each onto the read-out direction of the target token. Because the residual is exactly the sum of writes, the parts add back to the logit.",
+    [],
+    ["mechanics", "analysis", "core"]
+  ),
+  g(
+    "K-composition",
+    "Head B's key reads head A's output lane. Measured as the fraction of B's key-reading weight that lands in the dimensions A writes. Lift over chance distinguishes composition from coincidence.",
+    [],
+    ["mechanics", "circuits", "core"]
+  ),
+  g(
+    "Residual stream",
+    "The shared vector each layer adds to. Every head and MLP writes into one vector per position; the unembedding reads the sum. The central object of mechanistic interpretability.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Polysemanticity",
+    "One neuron fires for several unrelated reasons. The signature of superposition: the neuron is a mixture, not a feature, and reading neurons reads mixtures.",
+    [],
+    ["representation", "core"]
+  ),
+  g(
+    "Monosemanticity",
+    "One neuron or feature corresponds to one concept. The goal of sparse autoencoders: recover a monosemantic dictionary from a polysemantic network.",
+    [],
+    ["representation", "core"]
+  ),
+  g(
+    "Feature",
+    "A direction in activation space that corresponds to a single concept. Features are the units of explanation; neurons are not, because superposition packs multiple features into one neuron.",
+    [],
+    ["representation", "core"]
+  ),
+  g(
+    "Direction",
+    "A vector in the model's representation space. A feature is a direction; a concept is a direction; reading a model means finding which directions matter.",
+    [],
+    ["representation", "core"]
+  ),
+  g(
+    "Ablation",
+    "Zero a component's output and re-run the model. The cheapest causal intervention: if removing it changes nothing, it was decorative.",
+    [],
+    ["causality", "analysis", "core"]
+  ),
+  g(
+    "Causal intervention",
+    "Change something in the model and observe the effect. Ablation, patching and steering are all causal interventions; reading alone is not.",
+    [],
+    ["causality", "core"]
+  ),
+  g(
+    "Counterfactual",
+    "What would the model have done if this activation had been different. The question causal interventions answer.",
+    [],
+    ["causality", "core"]
+  ),
+  g(
+    "Probe",
+    "A small classifier trained on a model's internal activations to test whether a property is linearly readable at a given layer. Readability is a lower bound on what the model computes, not a window into the computation.",
+    [],
+    ["probes", "analysis", "core"]
+  ),
+  g(
+    "Linear probe",
+    "A logistic regression (or linear classifier) fit to activations at one layer. If it reaches high accuracy, the property is linearly readable there.",
+    [],
+    ["probes", "analysis", "core"]
+  ),
+  g(
+    "Steering",
+    "Add a vector to the residual stream and watch behaviour change. The flip side of probing: instead of reading a property, write one.",
+    [],
+    ["probes", "causality", "core"]
+  ),
+  g(
+    "Activation addition",
+    "Add a vector (often a probe direction or a refusal direction) to the residual stream during the forward pass. A simple, powerful steering technique.",
+    [],
+    ["probes", "causality", "core"]
+  ),
+  g(
+    "Readout",
+    "The final projection from residual stream to logits. The unembedding is the readout; everything before it is the computation.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Layer norm",
+    "Normalise a vector to zero mean and unit variance, then scale and shift. Pre-norm transformers apply it before attention and MLP; post-norm after. The constructed model disables it so the circuit algebra stays exact.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Pre-norm",
+    "Apply layer norm before the sublayer (attention/MLP), not after. The modern default; keeps gradients flowing through deep stacks.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Post-norm",
+    "Apply layer norm after the sublayer. The original transformer design; harder to train deep.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Causal mask",
+    "A triangular mask that prevents a position from attending to later positions. What makes a transformer autoregressive: token i can only read tokens 0..i.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Autoregressive",
+    "Generating one token at a time, each conditioned on all previous tokens. The mode every decoder transformer operates in at inference.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Decoder",
+    "A transformer that only attends to earlier positions (causal mask). Generates text left-to-right. The architecture behind GPT, Claude and Llama.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Encoder",
+    "A transformer that attends to all positions (bidirectional). Reads text rather than generating it. The architecture behind BERT.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Bidirectional",
+    "Attention that can see every position, past and future. Used by encoders; incompatible with autoregressive generation.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Generation",
+    "Producing new tokens one at a time by sampling from the model's distribution. The loop: forward pass, sample, append, repeat.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Temperature",
+    "A scalar that divides logits before softmax. Below 1 sharpens the distribution (more deterministic); above 1 flattens it (more random).",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Top-p",
+    "Nucleus sampling: keep the smallest set of tokens whose cumulative probability exceeds p, then sample from them. Adapts to the shape of the distribution.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Top-k",
+    "Keep only the k highest-probability tokens, then sample from them. Simpler than top-p but ignores the distribution's shape.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Softmax",
+    "Turns logits into a probability distribution: exponentiate, then normalise. The final step of every transformer's forward pass.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Probability",
+    "A number in [0,1] summing to 1 over the vocabulary. The model's belief about the next token.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Entropy",
+    "A measure of uncertainty: -sum p log p. High entropy = the model is unsure; low entropy = confident. Attention entropy measures how sharply a head focuses.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Attention entropy",
+    "The Shannon entropy of a head's averaged attention row, normalised by log(support). 0 means one-hot; 1 means uniform. The standard sharpness metric.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Focus",
+    "1 minus normalised attention entropy. 1 means the head always attends to one token; 0 means it attends uniformly.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Head",
+    "The unit of attention: one set of Q, K, V, O projections plus a pattern. A transformer has nHeads heads per layer, each attending independently.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Multi-head attention",
+    "Running several attention heads in parallel, each with its own projections, then concatenating and projecting. Lets the model attend to different things simultaneously.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "QKV",
+    "Query, Key, Value: the three projections that turn the residual stream into attention. Q asks 'what am I looking for?', K says 'what do I contain?', V carries 'what I will pass forward'.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Query",
+    "The vector a position uses to ask 'which earlier positions matter to me?'. Dot product with keys gives attention scores.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Key",
+    "The vector a position advertises for matching. A query matches a key when their dot product is large.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Value",
+    "The vector a position passes forward when attended to. The attention-weighted sum of values is the head's output.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Attention pattern",
+    "The matrix of attention weights: who attends to whom, how strongly. The most visually interpretable object in a transformer.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Heatmap",
+    "A 2D grid where colour encodes a number. Attention patterns are heatmaps; activation atlases are heatmaps. The default visualisation of interpretability.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Visualisation",
+    "Making a number visible. The whole point of an interpretability lab: numbers that cannot be seen cannot be checked.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Dashboard",
+    "A page that shows several numbers at once and updates as the model changes. cogitatome's /metrics route is a dashboard endpoint.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Monitoring",
+    "Watching a number over time to catch regressions. The reason every metric in cogitatome is a pure function of a trace.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Regression",
+    "A change that makes something worse than before. In interpretability, a regression is a metric that moves the wrong way when weights change.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "CI",
+    "Continuous integration: run the gates on every push. cogitatome's CI runs typecheck, lint, test, e2e, build, and check:induction.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Gate",
+    "A check that must pass before merging. cogitatome has six gates; all must be green.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Test",
+    "Code that checks code. cogitatome's tests include unit, integration, e2e, and the induction proof.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Coverage",
+    "The fraction of code exercised by tests. A proxy for confidence, not a guarantee of correctness.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Merge",
+    "Integrate a branch into the main line. In cogitatome, feature branches merge into develop, then develop into main.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "PR",
+    "Pull request: a proposed change with a description and a diff. The unit of review in open source.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Review",
+    "Reading someone else's code and leaving feedback. The human gate that CI cannot replace.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Code review",
+    "The practice of having another person read your change before it lands. Catches what tests miss: intent, clarity, design.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Open source",
+    "Software whose source is public and modifiable. cogitatome is MIT-licensed.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "License",
+    "The legal terms under which software is shared. cogitatome uses MIT.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "MIT",
+    "A permissive open-source license: do anything, just keep the copyright notice.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Copyright",
+    "The legal right to control copying of a work. cogitatome's copyright is Aniruddha Adak, 2026.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Community",
+    "The set of people who use, contribute to, or discuss a project. The reason open source works.",
+    [],
+    ["mechanics", "core"]
+  ),
+  g(
+    "Contributor",
+    "Someone who has contributed code, docs, or feedback to a project. The people who make open source real.",
+    [],
+    ["mechanics", "core"]
   ),
   // GLOSSARY_APPEND_HERE
 ];

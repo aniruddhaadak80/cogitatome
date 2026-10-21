@@ -25,7 +25,9 @@ export const OPENAPI = {
     { name: "debate", description: "Deterministic multi-agent argumentation" },
     { name: "corpus", description: "Search the research corpus" },
     { name: "timeline", description: "Snapshot and rewind simulation state" },
-    { name: "meta", description: "Health and version" }
+    { name: "meta", description: "Health and version" },
+    { name: "attribution", description: "Token attribution and ablation sweep" },
+    { name: "rollout", description: "Cross-layer attention rollout" }
   ],
   paths: {
     "/healthz": {
@@ -217,6 +219,46 @@ export const OPENAPI = {
         summary: "Server-sent events stream of deterministic simulation ticks",
         operationId: "stream",
         responses: { "200": { description: "text/event-stream" } }
+      }
+    },
+    "/api/v1/ablation": {
+      get: {
+        tags: ["attribution"],
+        summary: "Ablation sweep — remove every head and rank by importance",
+        operationId: "ablationSweep",
+        parameters: [
+          { name: "model", in: "query", schema: { type: "string", enum: ["induction", "random"] } },
+          { name: "tokens", in: "query", schema: { type: "string" } }
+        ],
+        responses: { "200": { description: "Ablation ranking" } }
+      }
+    },
+    "/api/v1/rollout": {
+      get: {
+        tags: ["rollout"],
+        summary: "Cross-layer attention rollout graph",
+        operationId: "attentionRollout",
+        parameters: [
+          { name: "model", in: "query", schema: { type: "string", enum: ["induction", "random"] } },
+          { name: "tokens", in: "query", schema: { type: "string" } },
+          { name: "threshold", in: "query", schema: { type: "number", default: 0.05 } },
+          { name: "position", in: "query", schema: { type: "integer" } }
+        ],
+        responses: { "200": { description: "Attention rollout graph" } }
+      }
+    },
+    "/api/v1/attribution": {
+      get: {
+        tags: ["attribution"],
+        summary: "Token attribution — which input tokens matter for the prediction",
+        operationId: "tokenAttribution",
+        parameters: [
+          { name: "model", in: "query", schema: { type: "string", enum: ["induction", "random"] } },
+          { name: "tokens", in: "query", schema: { type: "string" } },
+          { name: "targetToken", in: "query", schema: { type: "integer" } },
+          { name: "targetPosition", in: "query", schema: { type: "integer" } }
+        ],
+        responses: { "200": { description: "Token attribution report" } }
       }
     }
   },

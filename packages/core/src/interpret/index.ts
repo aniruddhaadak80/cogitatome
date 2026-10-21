@@ -25,3 +25,6 @@ export * from "./patching";
 export * from "./circuit";
 export * from "./metrics";
 export * from "./sae";
+export * from "./ablation";
+export * from "./rollout";
+export * from "./gradients";
