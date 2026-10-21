@@ -1,0 +1,33 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+flowchart TB
+  title["Attention rollout — compose layers into effective information flow"]
+
+  subgraph per_layer["Per-layer attention (averaged over heads)"]
+    L0["A₀ [seq][seq] — layer 0 pattern"]
+    L1["A₁ [seq][seq] — layer 1 pattern"]
+  end
+
+  subgraph compose["Composition"]
+    C["R = A₁ · A₀"]
+    C1["entry [i][j] = effective attention\nfrom j to i after both layers"]
+  end
+
+  subgraph graph["Graph (pruned ≥ threshold)"]
+    N["nodes: every position at every layer"]
+    E["edges: weight = R[i][j] > 0.001"]
+    P["prune: keep weight ≥ 0.05"]
+  end
+
+  subgraph readout["Readout — what does position P read?"]
+    T["topRolloutSources(graph, P, k)"]
+    S["sorted sources by weight\nposition + weight pairs"]
+  end
+
+  per_layer --> compose --> graph --> readout
+
+  note1["Note: rollout is dynamic (activation-space) —\ncomplements QK composition (static, weight-space)"]
+  title --> per_layer
+  N -.-> note1
+
+  classDef title fill:#0b1130,stroke:#a78bfa,stroke-width:2px,color:#f4f6fb;
+  classDef graph fill:#0d1424,stroke:#5ef1ff,stroke-width:1px,color:#f4f6fb;

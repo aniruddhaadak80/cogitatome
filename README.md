@@ -705,12 +705,14 @@ stateDiagram-v2
   end note
 ```
 
-Two diagrams are linked rather than embedded — the domain model ERD
+Three more diagrams live at `docs/diagrams/17-ablation-sweep.mmd`,
+`18-attention-rollout.mmd` and `19-token-attribution.mmd` (the newest
+additions). Two diagrams are linked rather than embedded — the domain model ERD
 (`docs/diagrams/03-domain-model.mmd`, 178 lines, mirrors the types in
 `packages/core/src/types.ts`) and the class model
 (`docs/diagrams/10-class-model.mmd`, 162 lines, `CogitatomeModel` and the
 analysis functions) — because embedding them would triple this file without
-adding a decision. Both render on GitHub from their sources.
+adding a decision. All nineteen render on GitHub from their sources.
 
 ![architecture poster](docs/images/architecture.svg)
 
@@ -768,7 +770,7 @@ lab; none gates the demo.
 | Decisions (8) | `docs/adr/0001–0008` |
 | Runbooks (6) | `docs/runbooks/` |
 | Architecture notes (5) | `docs/architecture/` |
-| Diagrams (16) | `docs/diagrams/*.mmd` |
+| Diagrams (19) | `docs/diagrams/*.mmd` |
 | Poster | `docs/images/architecture.svg` |
 
 Full index: [`docs/README.md`](docs/README.md).
