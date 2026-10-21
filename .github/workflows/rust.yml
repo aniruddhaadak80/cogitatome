@@ -17,6 +17,8 @@ jobs:
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/engine -> target
       - run: cargo fmt --manifest-path crates/engine/Cargo.toml --all -- --check
       - run: cargo clippy --manifest-path crates/engine/Cargo.toml --all-targets -- -D warnings
       - run: cargo test --manifest-path crates/engine/Cargo.toml

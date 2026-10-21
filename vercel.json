@@ -1,9 +1,12 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "buildCommand": "bun run build",
-  "installCommand": "bun install --frozen-lockfile",
-  "regions": ["iad1", "bom1"],
+  "services": {
+    "web": {
+      "framework": "nextjs",
+      "root": "apps/web",
+      "buildCommand": "bun run build",
+      "installCommand": "cd ../.. && bun install --frozen-lockfile"
+    }
+  },
   "github": { "silent": true },
   "headers": [
     {

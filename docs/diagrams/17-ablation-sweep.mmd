@@ -1,0 +1,43 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+flowchart TB
+  title["Ablation sweep — remove every head, one at a time"]
+  
+  subgraph input["Input"]
+    tokens["tokens: ^ a b c d ^ a b c d …"]
+    model["CogitatomeModel (constructed)"]
+  end
+
+  subgraph baseline["Baseline run (no ablation)"]
+    b1["model.forward(tokens)"]
+    b2["top logit at final position: T"]
+    b3["greedy argmax at every position"]
+  end
+
+  subgraph sweep["Sweep over every head"]
+    direction TB
+    h00["ablate L0.H0 (headGain := 0)"]:::head
+    h01["ablate L0.H1"]:::head
+    h10["ablate L1.H0 (induction)"]:::head
+    h11["ablate L1.H1 (distractor)"]:::head
+  end
+
+  subgraph measure["Measure the cost of each removal"]
+    m00["Δ top logit = T − T_ablated"]
+    m01["positions changed (argmax)"]
+    m02["learnable flipped (correct→wrong)"]
+    m03["importance = |Δ| / max|Δ| (0..1)"]
+  end
+
+  subgraph output["Output — ranked by importance"]
+    ranking["Ranked table: L1.H0 first (induction carries the answer)"]
+    most["mostImportant → L1.H0"]
+    least["leastImportant → diffuse distractor"]
+  end
+
+  input --> baseline --> sweep
+  sweep --> measure --> output
+  h10 -.-> most
+  h11 -.-> least
+
+  classDef head fill:#0b1130,stroke:#ffb347,stroke-width:2px,color:#f4f6fb;
+  classDef input fill:#0d1424,stroke:#5ef1ff,stroke-width:1px,color:#f4f6fb;
