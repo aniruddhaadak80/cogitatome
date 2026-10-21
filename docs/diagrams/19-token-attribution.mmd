@@ -1,0 +1,37 @@
+%%{init: {'theme':'base','themeVariables':{'background':'#05070f','mainBkg':'#0d1424','primaryColor':'#0d1424','primaryTextColor':'#f4f6fb','primaryBorderColor':'#5ef1ff','lineColor':'#8b93b0','secondaryColor':'#ffb347','tertiaryColor':'#080d1a','nodeBorder':'#5ef1ff','clusterBkg':'#080d1a','clusterBorder':'#1d2740','titleColor':'#f4f6fb','edgeLabelBackground':'#05070f'}}}%%
+flowchart TB
+  title["Token attribution — discrete integrated gradients"]
+
+  subgraph input["Input sequence"]
+    tok["tokens: ^ a b c d ^ a b c d …"]
+    target["target position P · target token T"]
+  end
+
+  subgraph baseline_run["Baseline forward pass"]
+    B["model.forward(tokens)"]
+    BL["target logit at P: L₀"]
+  end
+
+  subgraph sweep["Per-position replacement sweep"]
+    direction TB
+    r0["replace position 0 with baseline token 0"]
+    r1["replace position 1 with baseline token 0"]
+    rn["replace position N with baseline token 0"]
+  end
+
+  subgraph measure["Measure logit change"]
+    c0["L₀ − Lᵢ = Δᵢ (absolute = importance)"]
+    c1["normalise: max importance → 1.0"]
+    c2["normalisedᵢ = importanceᵢ / max importance"]
+  end
+
+  subgraph output["Output — ranked attribution"]
+    rank["ranked: position, token, importance, normalised"]
+    bar["bar chart — width = normalised importance"]
+    sumy["summary: top-5 positions carry X% of signal"]
+  end
+
+  input --> baseline_run --> sweep --> measure --> output
+
+  classDef title fill:#0b1130,stroke:#ffb347,stroke-width:2px,color:#f4f6fb;
+  classDef input fill:#0d1424,stroke:#5ef1ff,stroke-width:1px,color:#f4f6fb;

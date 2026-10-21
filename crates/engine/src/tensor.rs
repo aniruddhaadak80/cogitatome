@@ -244,7 +244,7 @@ impl<T: Float> Tensor<T> {
     ///
     /// [`Error::Shape`] when the buffer is not a whole number of rows.
     pub fn row(&self, row: usize, cols: usize) -> Result<&[T]> {
-        if cols == 0 || !self.data.len().is_multiple_of(cols) {
+        if cols == 0 || self.data.len() % cols != 0 {
             return Err(Error::Shape("row length must divide the buffer evenly"));
         }
         let rows = self.data.len() / cols;
@@ -779,7 +779,7 @@ fn attention_dims<T: Float>(q: &[T], k: &[T], seq: usize, heads: usize) -> Resul
         });
     }
     let block = seq * heads;
-    if !q.len().is_multiple_of(block) {
+    if q.len() % block != 0 {
         return Err(Error::Shape(
             "operand length must divide into heads * seq * d_head",
         ));

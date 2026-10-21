@@ -6,8 +6,8 @@
 FROM oven/bun:1.3.14 AS deps
 WORKDIR /app
 COPY package.json bun.lock ./
-COPY apps/web/package.json ./apps/web/package.json
-COPY packages/*/package.json ./packages/*/
+COPY apps ./apps
+COPY packages ./packages
 RUN bun install --frozen-lockfile
 
 FROM oven/bun:1.3.14 AS builder
@@ -19,12 +19,12 @@ RUN bun run build
 FROM oven/bun:1.3.14-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
-RUN adduser --disabled-password --gecos "" cogitatome || true
+RUN useradd -u 1001 -m appuser 2>/dev/null || adduser --disabled-password --gecos "" appuser 2>/dev/null || true
 # The app runs with `next start`, so the whole built workspace (node_modules +
 # .next) comes along. `output: 'standalone'` is deliberately not set — the
 # monorepo's workspace symlinks don't survive the standalone trace.
-COPY --from=builder --chown=cogitatome /app /app
-USER cogitatome
+COPY --from=builder --chown=1001:1001 /app /app
+USER 1001
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD bun -e "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"

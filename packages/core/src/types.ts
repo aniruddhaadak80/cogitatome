@@ -283,3 +283,77 @@ export interface TimelineSnapshot<TShape> {
   readonly state: TShape;
   readonly checksum: string;
 }
+
+// ---------------------------------------------------------------------------
+// Ablation sweep
+// ---------------------------------------------------------------------------
+
+export interface AblationRow {
+  readonly layer: number;
+  readonly head: number;
+  /** Top logit at the final position before ablation. */
+  readonly baselineTopLogit: number;
+  /** Top logit at the final position after ablation. */
+  readonly ablatedTopLogit: number;
+  /** ablated - baseline (negative = ablation hurt). */
+  readonly delta: number;
+  /** How many positions changed their argmax prediction. */
+  readonly positionsChanged: number;
+  /** Learnable positions that flipped from correct to incorrect. */
+  readonly learnableFlipped: number;
+  /** Relative importance: delta / max |delta| across all heads. */
+  readonly importance: number;
+}
+
+export interface AblationSweep {
+  readonly rows: readonly AblationRow[];
+  readonly mostImportant: { readonly layer: number; readonly head: number } | null;
+  readonly leastImportant: { readonly layer: number; readonly head: number } | null;
+}
+
+// ---------------------------------------------------------------------------
+// Attention rollout
+// ---------------------------------------------------------------------------
+
+export interface RolloutNode {
+  readonly id: string;
+  readonly label: string;
+  readonly layer: number;
+  readonly position: number;
+}
+
+export interface RolloutEdge {
+  readonly from: string;
+  readonly to: string;
+  /** Composed attention weight. */
+  readonly weight: number;
+}
+
+export interface RolloutGraph {
+  readonly nodes: readonly RolloutNode[];
+  readonly edges: readonly RolloutEdge[];
+  /** Pruned edges (weight ≥ threshold). */
+  readonly prunedEdges: readonly RolloutEdge[];
+  readonly threshold: number;
+}
+
+// ---------------------------------------------------------------------------
+// Integrated gradients
+// ---------------------------------------------------------------------------
+
+export interface GradientAttribution {
+  readonly token: number;
+  readonly position: number;
+  /** Attributed importance = sum over dimensions of |grad * input|. */
+  readonly importance: number;
+  /** Normalised to sum to 1 across positions. */
+  readonly normalised: number;
+}
+
+export interface GradientReport {
+  readonly targetToken: number;
+  readonly targetPosition: number;
+  readonly attributions: readonly GradientAttribution[];
+  /** Baseline used for the integral (zero embedding). */
+  readonly steps: number;
+}

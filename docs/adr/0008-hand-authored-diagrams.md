@@ -10,8 +10,9 @@ changes. Generated PNGs rot silently; Mermaid diffs reviewably.
 
 ## Decision
 
-Sixteen Mermaid sources in `docs/diagrams/*.mmd`, embedded as code blocks in
-README and docs (GitHub renders them). Two use custom `themeVariables` in the
+Sixteen Mermaid sources in `docs/diagrams/*.mmd` (nineteen after the ablation,
+rollout and attribution additions), embedded as code blocks in README and docs
+(GitHub renders them). Two use custom `themeVariables` in the
 repo palette; the forward-pass sequence uses `autonumber`. Brand/screenshot
 art is deterministic SVG from `scripts/gen-assets.mjs` (seeded, idempotent,
 `--check` in CI).
