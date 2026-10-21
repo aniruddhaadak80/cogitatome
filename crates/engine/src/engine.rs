@@ -731,7 +731,7 @@ mod tests {
             assert_eq!(row.len(), out.config.vocab);
             let sum: f64 = row.iter().sum();
             assert!(approx(sum, 1.0), "position {position} summed to {sum}");
-            assert!(row.iter().all(|&p| p >= 0.0 && p <= 1.0));
+            assert!(row.iter().all(|&p| (0.0..=1.0).contains(&p)));
         }
         // Entropy is bounded by ln(vocab).
         for (position, row) in probs.iter().enumerate() {

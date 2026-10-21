@@ -149,7 +149,7 @@ fn divergences_and_superposition_on_recorded_activations() {
     assert!(approx(js_divergence(&first, &first).expect("ok"), 0.0));
     assert!(approx(kl_divergence(&first, &first).expect("ok"), 0.0));
     let js = js_divergence(&first, &second).expect("ok");
-    assert!(js >= 0.0 && js <= std::f64::consts::LN_2 + 1e-9);
+    assert!((0.0..=std::f64::consts::LN_2 + 1e-9).contains(&js));
 
     // Superposition of the per-position residual rows: a handful of 32-wide
     // rows cannot pack more than 32 directions into 32 dimensions, so the

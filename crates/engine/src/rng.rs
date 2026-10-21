@@ -149,7 +149,7 @@ impl Rng {
     /// not positive — callers can treat that as "nothing to sample".
     pub fn weighted_index(&mut self, weights: &[f64]) -> Option<usize> {
         let total: f64 = weights.iter().sum();
-        if !(total > 0.0) || !total.is_finite() {
+        if total <= 0.0 || !total.is_finite() {
             return None;
         }
         let mut target = self.f64() * total;
@@ -222,17 +222,29 @@ mod tests {
         }
     }
 
+    /// Golden `f64` values for the seed-42 stream.
+    ///
+    /// `(draw >> 11) as f64 * 2^-53` is exact for every draw — the mantissa is
+    /// below `2^53` and the scale is a power of two, so nothing ever rounds —
+    /// which makes each value below fully determined by [`SEED_42_STREAM`].
+    ///
+    /// The test re-derives them from that array so the two pins cannot drift
+    /// apart, and so a stale literal reports itself as such instead of looking
+    /// like a change in the generator.
+    const SEED_42_F64: [f64; 4] = [
+        0.741_564_878_771_823_3,
+        0.159_910_392_876_920_1,
+        0.278_601_130_255_138_66,
+        0.344_190_716_523_637_53,
+    ];
+
     #[test]
     fn f64_matches_the_reference_stream() {
-        let expected = [
-            0.741_564_878_771_823_31,
-            0.159_910_392_876_920_10,
-            0.278_601_130_255_138_66,
-            0.344_190_716_523_637_53,
-        ];
         let mut rng = Rng::new(42);
-        for want in expected {
-            assert_eq!(rng.f64(), want);
+        for (draw, want) in SEED_42_STREAM.iter().zip(SEED_42_F64) {
+            let from_spec = (draw >> 11) as f64 * (1.0 / ((1u64 << 53) as f64));
+            assert_eq!(from_spec, want, "SEED_42_F64 drifted from SEED_42_STREAM");
+            assert_eq!(rng.f64(), want, "Rng::f64 drifted from the spec mapping");
         }
     }
 

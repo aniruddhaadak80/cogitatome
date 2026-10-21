@@ -20,6 +20,7 @@ export default [
       "**/dist/**",
       "**/coverage/**",
       "**/.turbo/**",
+      "**/.vercel/**",
       "**/playwright-report/**",
       "**/test-results/**",
       "**/target/**",

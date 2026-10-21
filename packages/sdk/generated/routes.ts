@@ -24,7 +24,10 @@ export const ROUTES: readonly RouteRow[] = [
   { path: "/api/v1/sandbox", method: "POST", operationId: "runScenario", summary: "Run an alignment scenario", tags: ["sandbox"] },
   { path: "/api/v1/ethics", method: "POST", operationId: "analyseEthics", summary: "Analyse an AI ethics case", tags: ["ethics"] },
   { path: "/api/v1/debate", method: "POST", operationId: "debate", summary: "Run a deterministic interpreter/skeptic/red-team debate", tags: ["debate"] },
-  { path: "/api/v1/stream", method: "GET", operationId: "stream", summary: "Server-sent events stream of deterministic simulation ticks", tags: ["interpret"] }
+  { path: "/api/v1/stream", method: "GET", operationId: "stream", summary: "Server-sent events stream of deterministic simulation ticks", tags: ["interpret"] },
+  { path: "/api/v1/ablation", method: "GET", operationId: "ablationSweep", summary: "Ablation sweep — remove every head and rank by importance", tags: ["attribution"] },
+  { path: "/api/v1/rollout", method: "GET", operationId: "attentionRollout", summary: "Cross-layer attention rollout graph", tags: ["rollout"] },
+  { path: "/api/v1/attribution", method: "GET", operationId: "tokenAttribution", summary: "Token attribution — which input tokens matter for the prediction", tags: ["attribution"] }
 ];
 
 export const ROUTE_COUNT = ROUTES.length;
