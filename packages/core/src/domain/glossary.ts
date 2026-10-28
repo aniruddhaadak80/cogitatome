@@ -44,7 +44,8 @@ export function glossaryKey(term: string): string {
   return term
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
 }
 
 const RAW: readonly GlossaryEntry[] = [
