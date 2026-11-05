@@ -41,11 +41,13 @@ function g(
 
 /** Slug used to look a term up: lowercase, punctuation collapsed to hyphens. */
 export function glossaryKey(term: string): string {
-  return term
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
+  const slug = term.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  // Trim leading/trailing hyphens without backtracking-prone regexes.
+  let start = 0;
+  while (start < slug.length && slug.charCodeAt(start) === 45 /* '-' */) start += 1;
+  let end = slug.length;
+  while (end > start && slug.charCodeAt(end - 1) === 45 /* '-' */) end -= 1;
+  return slug.slice(start, end);
 }
 
 const RAW: readonly GlossaryEntry[] = [
