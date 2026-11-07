@@ -3,7 +3,7 @@
 # (Python 3.12) in the editable venv; the multi-stage Dockerfile installs them.
 # Runtime dependencies:
 fastapi==0.143.0
-starlette==0.52.1
+starlette==1.3.1
 uvicorn[standard]==0.54.0
 pydantic==2.14.0
 numpy==2.5.4
