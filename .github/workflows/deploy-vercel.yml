@@ -32,7 +32,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::VERCEL_TOKEN/VERCEL_PROJECT_ID are not set — skipping the explicit deploy workflow."
+            echo "::notice::VERCEL_TOKEN/VERCEL_PROJECT_ID are not set ΓÇö skipping the explicit deploy workflow."
           fi
       - run: bun install --frozen-lockfile
         if: steps.preflight.outputs.ready == 'true'
