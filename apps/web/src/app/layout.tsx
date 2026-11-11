@@ -1,23 +1,32 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Sora } from "next/font/google";
+import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppShell } from "@/components/app-shell";
 import "./globals.css";
 
-const display = Sora({
+// Self-hosted variable fonts. `next/font/google` downloads the Google Fonts
+// CSS at build time, which fails in CI where that egress is unavailable
+// ("next/font/google queries have exactly one entry" / a null CSS response).
+// Local fonts remove the build-time network dependency entirely.
+const display = localFont({
+  src: "./fonts/sora.woff2",
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"]
+  weight: "100 800",
+  display: "swap"
 });
 
-const body = Inter({
+const body = localFont({
+  src: "./fonts/inter.woff2",
   variable: "--font-body",
-  subsets: ["latin"]
+  weight: "100 900",
+  display: "swap"
 });
 
-const mono = JetBrains_Mono({
+const mono = localFont({
+  src: "./fonts/jetbrains-mono.woff2",
   variable: "--font-mono",
-  subsets: ["latin"]
+  weight: "100 800",
+  display: "swap"
 });
 
 export const metadata: Metadata = {
