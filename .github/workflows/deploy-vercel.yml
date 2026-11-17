@@ -1,6 +1,9 @@
 
 name: deploy-vercel
 
+permissions:
+  contents: read
+
 # Production deploys track main. Requires repo secrets:
 #   VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 # When the secrets are absent the job skips instead of failing, so forks and
