@@ -1,6 +1,9 @@
 
 name: link-check
 
+permissions:
+  contents: read
+
 on:
   schedule:
     - cron: "0 7 * * 1"
