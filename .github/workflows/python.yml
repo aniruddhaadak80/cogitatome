@@ -1,6 +1,9 @@
 
 name: Python CI (agents service)
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:
