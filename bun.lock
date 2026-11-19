@@ -46,7 +46,7 @@
         "recharts": "^3.1.2",
         "tailwind-merge": "^3.3.1",
         "three": "^0.187.0",
-        "zod": "^3.25.76",
+        "zod": "^4.6.6",
         "zustand": "^5.1.0",
       },
       "devDependencies": {
@@ -70,7 +70,7 @@
       "version": "0.1.0",
       "dependencies": {
         "date-fns": "^4.1.0",
-        "zod": "^3.25.76",
+        "zod": "^4.6.6",
       },
     },
     "packages/db": {
@@ -88,7 +88,7 @@
       "name": "@repo/sdk",
       "version": "0.1.0",
       "dependencies": {
-        "zod": "^3.25.76",
+        "zod": "^4.6.6",
       },
       "devDependencies": {
         "typescript": "^5.9.2",
@@ -1386,7 +1386,7 @@
 
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
 
-    "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
+    "zod": ["zod@4.6.7", "", {}, "sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg=="],
 
     "zustand": ["zustand@5.1.0", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-ciJZlP48M1PTQbVQq81CGVFxHTLpZNrFjKqwjtCU34AWuXTZT/jrF3p9+fI84Cf1eSCMLapxqBy/SNTfwOBuqA=="],
 
